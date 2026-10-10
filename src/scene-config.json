@@ -1,0 +1,107 @@
+[
+  {
+    "id": "box-1",
+    "name": "粉色方块",
+    "type": "box",
+    "position": {
+      "x": -2,
+      "y": 0.75,
+      "z": -1
+    },
+    "size": {
+      "width": 1.5,
+      "height": 1.5,
+      "depth": 1.5
+    },
+    "color": "#ff66aa"
+  },
+  {
+    "id": "box-2",
+    "name": "绿色方块",
+    "type": "box",
+    "position": {
+      "x": 0,
+      "y": 0.75,
+      "z": 1
+    },
+    "size": {
+      "width": 1.5,
+      "height": 1.5,
+      "depth": 1.5
+    },
+    "color": "#66ddaa"
+  },
+  {
+    "id": "box-3",
+    "name": "紫色方块",
+    "type": "box",
+    "position": {
+      "x": 3,
+      "y": 0.75,
+      "z": -1
+    },
+    "size": {
+      "width": 1.5,
+      "height": 1.5,
+      "depth": 1.5
+    },
+    "color": "#9966ff"
+  },
+  {
+    "id": "box-4",
+    "name": "黑色方块",
+    "type": "box",
+    "position": {
+      "x": 5,
+      "y": 2,
+      "z": -3
+    },
+    "size": {
+      "width": 1.5,
+      "height": 4,
+      "depth": 1.5
+    },
+    "color": "#000000"
+  },
+  {
+  "id": "observer-1",
+  "name": "观察点",
+  "type": "observer",
+  "position": { "x": -5, "y": 1, "z": 0 },
+  "direction": { "x": 1, "y": 0, "z": 0 },
+  "fov": 90,
+  "maxDistance": 12
+},
+  {
+  "id": "target-1",
+  "name": "观察目标",
+  "type": "target",
+ "position": { "x": -4,"y": 1, "z": 3 },
+  "size": { "width": 1, "height": 2, "depth": 1 },
+  "color": "#ff3333"
+},
+  {
+  "id": "target-2",
+  "name": "正前方目标",
+  "type": "target",
+  "position": { "x": 2, "y": 1, "z": 0 },
+  "size": { "width": 1, "height": 2, "depth": 1 },
+  "color": "#ffcc33"
+},
+  {
+  "id": "target-3",
+  "name": "墙后目标",
+  "type": "target",
+  "position": { "x": 6, "y": 1, "z": 0 },
+  "size": { "width": 1, "height": 2, "depth": 1 },
+  "color": "#33aaff"
+},
+  {
+  "id": "wall-1",
+  "name": "测试墙",
+  "type": "wall",
+  "position": { "x":5, "y": 1.5, "z": 0 },
+  "size": { "width": 0.5, "height": 3, "depth": 2 },
+  "color": "#777777"
+}
+]

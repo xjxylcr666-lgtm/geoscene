@@ -1,0 +1,5 @@
+fastapi[standard]
+openai
+python-dotenv
+pyproj>=3.7,<4
+shapely>=2,<3

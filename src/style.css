@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
+body { background: #101d24; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+#app { position: absolute; inset: 0 382px 0 0; width: auto; height: auto; }
+.scene-heading { position: absolute; top: 32px; left: 34px; pointer-events: none; color: #20383e; }
+.scene-heading span { font-size: 10px; letter-spacing: 3px; font-weight: 700; }
+.scene-heading h1 { margin: 11px 0 7px; font-size: 32px; font-weight: 500; letter-spacing: 5px; }
+.scene-heading p { font-size: 9px; letter-spacing: 2px; opacity: .7; }
+.scene-footer { position: absolute; bottom: 22px; left: 28px; color: #d5e5df; background: #20383cbb; border: 1px solid #b1c7bd44; border-radius: 6px; padding: 10px 14px; font-size: 11px; backdrop-filter: blur(12px); }
+.tool-panel { top: 0 !important; right: 0 !important; width: 382px; height: 100vh; max-height: 100vh !important; padding: 28px 23px !important; border-radius: 0 !important; background: linear-gradient(150deg,#1d3038,#101d24) !important; border-left: 1px solid #789a9d33; font-size: 12px; line-height: 1.65; }
+.tool-panel > div:first-child { font-size: 20px !important; }
+.tool-panel input { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid #688e964d; border-radius: 7px; background: #09182099; color: #e1efec; font: inherit; outline: none; margin-top: 12px; }
+.tool-panel input:focus { border-color: #6bc7b9; }
+.tool-panel button { border: 1px solid #78aca85c; background: #29464e; color: #e4f0ed; padding: 9px 13px; border-radius: 6px; font: inherit; cursor: pointer; margin: 8px 7px 0 0 !important; }
+.tool-panel button:hover { background: #365b61; }
+.tool-panel button:disabled { opacity: .45; cursor: wait; }
+.tool-panel a { text-decoration: none; font-size: 11px; }
+.tool-panel a:hover { text-decoration: underline; }
+.tool-panel::-webkit-scrollbar { width: 5px; }
+.tool-panel::-webkit-scrollbar-thumb { background: #537278; border-radius: 8px; }
+@media(max-width: 760px) { #app { inset: 0 0 46% 0; } .tool-panel { top: 54% !important; width: 100%; height: 46vh; max-height: 46vh !important; padding: 16px !important; } .scene-heading { top: 15px; left: 18px; } .scene-heading h1 { font-size: 22px; } .scene-footer { bottom: 48%; left: 12px; font-size: 9px; padding: 6px; } }

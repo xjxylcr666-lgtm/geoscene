@@ -1,0 +1,23 @@
+{
+  "source": "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/BUILDING_view/FeatureServer/0",
+  "query": "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/BUILDING_view/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-74.0105%2C40.706%2C-74.007%2C40.709&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=%2A&orderByFields=OBJECTID&returnGeometry=true&resultRecordCount=150",
+  "downloaded_at": "2026-10-05T18:43:20.439691+00:00",
+  "bbox": [
+    -74.0105,
+    40.706,
+    -74.007,
+    40.709
+  ],
+  "count": 54,
+  "sample_count": 3,
+  "sample_bytes": 3742,
+  "estimated_bytes": 67356,
+  "actual_bytes": 66361,
+  "maximum_bytes": 2000000,
+  "sha256": "a602d075b6277c1508295fa15472fb3bfef0e5bc9044396c077b82dec3bc4cb0",
+  "source_service_crs": "EPSG:3857",
+  "delivered_crs": "EPSG:4326 longitude,latitude; degrees",
+  "license": "NYC Open Data Terms of Use; informational use, no accuracy warranty",
+  "license_url": "https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje",
+  "metadata_url": "https://raw.githubusercontent.com/CityOfNewYork/nyc-geo-metadata/master/Metadata/Metadata_BuildingFootprints.md"
+}

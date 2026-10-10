@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GeoScene · 建筑巡检方案</title></head>
+<body><main id="viewport"></main><aside>
+<a href="/">← 原模拟场景 / USGS / Agent</a><h1>建筑巡检方案</h1>
+<p>纽约市官方建筑轮廓 · 局部米制分析</p><p id="data-status">数据加载中…</p>
+<p class="warning">全部高度假设为10米，地面为平面。观察点、巡检目标为模拟。结论仅适用于这些假设。</p>
+<a href="https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje" target="_blank" rel="noreferrer">NYC Open Data 来源与使用条款</a>
+<div id="schemes"></div><label>目标ID（逗号分隔）<textarea id="target-ids" rows="3"></textarea></label>
+<button id="batch" disabled>分析方案 A</button><button id="compare" disabled>比较 A / B</button>
+<button id="export" disabled>保存同次分析报告</button><button id="reset-view">重置视角</button>
+<p id="status" role="status">等待数据</p><div id="report-link"></div><div id="results"></div>
+<details><summary>巡检 Agent（真实模型工具调用）</summary><p>普通分析按钮不调用模型。启用下方开关后调用 DeepSeek，单独计费。每次提交完整指令，例如“用方案A分析inspect-02”；目前不保存多轮对话上下文。</p>
+<label><input id="enable-model" type="checkbox">允许本次真实模型调用（单独计费）</label>
+<input id="instruction" value="比较A和B方案对全部目标的可见性"><button id="agent" disabled>运行巡检 Agent</button><p id="agent-status">本页面尚未发起模型请求</p></details>
+<details><summary>数据与方法限制</summary><ul id="limitations"></ul></details>
+</aside><script type="module" src="/src/inspection.js"></script></body></html>
