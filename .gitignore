@@ -15,7 +15,8 @@ dist-ssr
 .env.*
 .pytest_cache/
 work/
-outputs/
+# Generated local reports; checked-in docs/example-agent-report.* are fixtures.
+/outputs/
 .venv/
 __pycache__/
 *.pyc

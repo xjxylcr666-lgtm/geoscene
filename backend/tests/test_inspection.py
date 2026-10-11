@@ -97,3 +97,46 @@ def test_report_export_uses_actual_snapshot_and_escapes_text(result,tmp_path):
 def test_invalid_report_rejected(result):
     snapshot=dict(run_id='bad',created_at='test',execution_mode='test',result=result,screenshot='javascript:alert(1)')
     assert TestClient(app).post('/inspection/reports',json=snapshot).status_code==400
+
+def test_default_report_path_survives_relocation_and_cwd(tmp_path,monkeypatch):
+    project=tmp_path/'relocated-project'
+    monkeypatch.setattr(inspection,'PROJECT_ROOT',project)
+    monkeypatch.delenv('GEOSCENE_REPORT_DIR',raising=False)
+    monkeypatch.chdir(tmp_path)
+    assert inspection.resolve_reports_directory()==project/'outputs'/'inspection-reports'
+
+@pytest.mark.parametrize('configured',['custom-reports','absolute','   '])
+def test_report_path_override(configured,tmp_path,monkeypatch):
+    project=tmp_path/'clone'
+    monkeypatch.setattr(inspection,'PROJECT_ROOT',project)
+    value=str(tmp_path/'elsewhere') if configured=='absolute' else configured
+    monkeypatch.setenv('GEOSCENE_REPORT_DIR',value)
+    expected=tmp_path/'elsewhere' if configured=='absolute' else project/('outputs/inspection-reports' if not value.strip() else value)
+    assert inspection.resolve_reports_directory()==expected
+
+def test_report_export_preserves_existing_files(result,tmp_path):
+    old=tmp_path/'existing.html'
+    old.write_text('keep',encoding='utf-8')
+    snapshot=dict(run_id='relocation-test',created_at='test',execution_mode='offline',result=result,
+                  screenshot='data:image/png;base64,'+base64.b64encode(b'\x89PNG\r\n\x1a\n').decode())
+    with patch.object(inspection,'REPORTS',tmp_path):
+        client=TestClient(app)
+        first=client.post('/inspection/reports',json=snapshot)
+        second=client.post('/inspection/reports',json=snapshot)
+        assert first.status_code==second.status_code==200
+        assert first.json()['filename']!=second.json()['filename']
+        saved=json.loads((tmp_path/first.json()['filename'].replace('.html','.json')).read_text(encoding='utf-8'))
+        assert saved==snapshot
+        assert client.get(first.json()['url']).status_code==200
+    assert old.read_text(encoding='utf-8')=='keep'
+
+def test_report_directory_error_returns_actionable_status(result,tmp_path):
+    blocked=tmp_path/'not-a-directory'
+    blocked.write_text('keep',encoding='utf-8')
+    snapshot=dict(run_id='error',created_at='test',execution_mode='offline',result=result,
+                  screenshot='data:image/png;base64,'+base64.b64encode(b'\x89PNG\r\n\x1a\n').decode())
+    with patch.object(inspection,'REPORTS',blocked):
+        response=TestClient(app).post('/inspection/reports',json=snapshot)
+    assert response.status_code==503
+    assert 'GEOSCENE_REPORT_DIR' in response.json()['detail']
+    assert blocked.read_text(encoding='utf-8')=='keep'

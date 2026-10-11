@@ -1,4 +1,5 @@
 from typing import Annotated, Any, Literal
+import os
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,13 +17,13 @@ from backend.scene_validation import validate_scene
 from backend.validation import validate_target
 
 
-app = FastAPI(title="GeoScene Validation and Agent Service")
+app = FastAPI(title="GeoScene", version="0.1.0")
 from backend.inspection import router as inspection_router
 app.include_router(inspection_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173"],
+    allow_origins=[origin.strip() for origin in os.getenv('GEOSCENE_ALLOWED_ORIGINS', 'http://127.0.0.1:5173').split(',') if origin.strip()],
     allow_methods=["POST"],
     allow_headers=["Content-Type"],
 )

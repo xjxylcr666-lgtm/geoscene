@@ -4,6 +4,7 @@ import copy
 import html
 import json
 import math
+import os
 from pathlib import Path
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException
@@ -11,8 +12,16 @@ from fastapi.responses import FileResponse
 from backend.agent_service import _client, _model_name, _usage, AgentProviderError
 
 router = APIRouter(prefix='/inspection')
-DATA = Path(__file__).resolve().parents[1] / 'public/data/buildings/nyc-local.json'
-REPORTS = Path(__file__).resolve().parents[5] / '2026-09-28/geoscene-130-6-7-python-http/outputs/inspection-reports'
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA = PROJECT_ROOT / 'public/data/buildings/nyc-local.json'
+
+def resolve_reports_directory():
+    """Relative overrides are project-relative, never dependent on shell cwd."""
+    configured = os.getenv('GEOSCENE_REPORT_DIR', '').strip()
+    path = Path(configured).expanduser() if configured else Path('outputs/inspection-reports')
+    return (path if path.is_absolute() else PROJECT_ROOT / path).resolve()
+
+REPORTS = resolve_reports_directory()
 
 def dataset():
     return json.loads(DATA.read_text(encoding='utf-8'))
@@ -146,10 +155,13 @@ def report_html(snapshot):
 def save_report(snapshot: dict):
     try: rendered=report_html(snapshot)
     except (ValueError,KeyError,TypeError) as e: raise HTTPException(400,str(e))
-    REPORTS.mkdir(parents=True,exist_ok=True)
     name='inspection-'+uuid4().hex
-    (REPORTS/(name+'.html')).write_text(rendered,encoding='utf-8')
-    (REPORTS/(name+'.json')).write_text(json.dumps(snapshot,ensure_ascii=False,indent=2),encoding='utf-8')
+    try:
+        REPORTS.mkdir(parents=True,exist_ok=True)
+        (REPORTS/(name+'.html')).write_text(rendered,encoding='utf-8')
+        (REPORTS/(name+'.json')).write_text(json.dumps(snapshot,ensure_ascii=False,indent=2),encoding='utf-8')
+    except OSError:
+        raise HTTPException(503,'报告目录不可写，请检查GEOSCENE_REPORT_DIR和磁盘权限')
     return dict(url='/inspection/reports/'+name+'.html',filename=name+'.html')
 
 @router.get('/reports/{filename}')

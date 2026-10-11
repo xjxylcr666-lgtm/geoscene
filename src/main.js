@@ -149,11 +149,12 @@ publicDataLegend.style.marginTop = '6px'
 publicDataLegend.style.fontSize = '12px'
 publicDataLegend.textContent = '图例：🔴 M≥7　🟠 M≥6　🟡 M≥5；柱高随震级增大'
 
-const validationApiUrl = 'http://127.0.0.1:8000/validate-target'
-const sceneValidationApiUrl = 'http://127.0.0.1:8000/validate-scene'
-const earthquakeAdapterApiUrl = 'http://127.0.0.1:8000/geojson/earthquakes-to-targets'
-const agentPlanApiUrl = 'http://127.0.0.1:8000/agent/plan'
-const agentCompleteApiUrl = 'http://127.0.0.1:8000/agent/complete'
+const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000').replace(/\/$/, '')
+const validationApiUrl = apiBase + '/validate-target'
+const sceneValidationApiUrl = apiBase + '/validate-scene'
+const earthquakeAdapterApiUrl = apiBase + '/geojson/earthquakes-to-targets'
+const agentPlanApiUrl = apiBase + '/agent/plan'
+const agentCompleteApiUrl = apiBase + '/agent/complete'
 let visibilityLine = null
 let requestVersion = 0
 

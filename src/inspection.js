@@ -4,7 +4,7 @@ import { buildingMeshes,executeInspectionTool,ResultState,validateScheme } from 
 import './inspection.css'
 
 const $=id=>document.getElementById(id)
-const API='http://127.0.0.1:8000'
+const API=(import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000').replace(/\/$/,'')
 const scene=new THREE.Scene()
 scene.background=new THREE.Color('#cbd8df')
 const camera=new THREE.PerspectiveCamera(48,1,0.2,3000)
