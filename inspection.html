@@ -1,15 +1,13 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GeoScene · 建筑巡检方案</title></head>
-<body><main id="viewport"></main><aside>
-<a href="/">← 原模拟场景 / USGS / Agent</a><h1>建筑巡检方案</h1>
-<p>纽约市官方建筑轮廓 · 局部米制分析</p><p id="data-status">数据加载中…</p>
-<p class="warning">全部高度假设为10米，地面为平面。观察点、巡检目标为模拟。结论仅适用于这些假设。</p>
-<a href="https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje" target="_blank" rel="noreferrer">NYC Open Data 来源与使用条款</a>
-<div id="schemes"></div><label>目标ID（逗号分隔）<textarea id="target-ids" rows="3"></textarea></label>
-<button id="batch" disabled>分析方案 A</button><button id="compare" disabled>比较 A / B</button>
-<button id="export" disabled>保存同次分析报告</button><button id="reset-view">重置视角</button>
-<p id="status" role="status">等待数据</p><div id="report-link"></div><div id="results"></div>
-<details><summary>巡检 Agent（真实模型工具调用）</summary><p>普通分析按钮不调用模型。启用下方开关后调用 DeepSeek，单独计费。每次提交完整指令，例如“用方案A分析inspect-02”；目前不保存多轮对话上下文。</p>
-<label><input id="enable-model" type="checkbox">允许本次真实模型调用（单独计费）</label>
-<input id="instruction" value="比较A和B方案对全部目标的可见性"><button id="agent" disabled>运行巡检 Agent</button><p id="agent-status">本页面尚未发起模型请求</p></details>
-<details><summary>数据与方法限制</summary><ul id="limitations"></ul></details>
-</aside><script type="module" src="/src/inspection.js"></script></body></html>
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GeoScene · 三维建筑遮挡预检</title></head>
+<body>
+<header><div><h1>GeoScene <small>三维建筑遮挡预检</small></h1><p id="data-status">加载项目…</p></div><button id="export" disabled>生成正式预检报告 HTML / JSON</button></header>
+<main class="workspace"><section class="scene-panel"><div id="viewport"></div><div class="scene-tools"><button id="reset-view">重置视角</button><span>灰蓝：官方轮廓 · 铜色：人工建筑 · 黄：目标 · 绿/红：首方案可见/不可见</span></div><p id="pointer-status">本地场景坐标 X/Z（米），不是经纬度。拖动旋转，滚轮缩放。</p></section>
+<aside><nav aria-label="工作区"><button data-tab="project">项目数据</button><button data-tab="editor">建筑编辑</button><button data-tab="plans">观测方案</button><button data-tab="analysis">分析结果</button><button data-tab="reports">Agent与报告</button></nav>
+<section data-panel="project"><h2>项目数据</h2><p class="warning">官方建筑轮廓是真实公开数据，但全部高度假设10米，地形为平地。目标及观察方案为模拟。人工建筑代表用户假设，不是实测数据。</p><button id="save-project">保存人工建筑项目 JSON</button><div id="project-link"></div><label>恢复人工建筑项目<input id="load-project" type="file" accept=".json,application/json"></label><p>导入只替换人工建筑，不改变官方轮廓。可用“撤销”恢复。文件不包含密钥。方案参数不随建筑文件保存。</p><a href="https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje" target="_blank" rel="noreferrer">NYC 来源与使用条款</a><details><summary>数据与方法限制</summary><ul id="limitations"></ul></details><a href="/">原模拟场景 / USGS</a></section>
+<section data-panel="editor" hidden><h2>建筑编辑</h2><p>坐标单位为本地米；底面固定 Y=0。旋转角为 X/Z 平面正向角度。</p><label>人工建筑列表<select id="building-list"><option value="">新建建筑</option></select></label><div class="row"><button id="new-building">新建</button><button id="delete-building" class="danger">删除选中</button><button id="undo">撤销上一步</button></div><label>创建方式<select id="method"><option value="rectangle">矩形建筑</option><option value="polygon">多边形建筑</option></select></label><label>名称<input id="building-name" value="人工建筑" maxlength="80"></label><div class="fields"><label>高度（米）<input id="height" type="number" value="10" step="any"></label><label>中心 X<input id="x" type="number" value="-75" step="any"></label><label>中心 Z<input id="z" type="number" value="-125" step="any"></label><label>长度（X向）<input id="length" type="number" value="8" step="any"></label><label>宽度（Z向）<input id="width" type="number" value="8" step="any"></label><label>旋转（度）<input id="rotation" type="number" value="0" step="any"></label></div>
+<label id="points-label" hidden>边界点（每行 X,Z；也可点击地面）<textarea id="points" rows="5"></textarea></label><div class="row"><button id="place">开启地面选点</button><button id="close-polygon">闭合多边形</button><button id="remove-point">撤销最后一点</button></div><p id="editor-status" role="status">编辑表单后显示半透明预览，预览未参与计算。</p><div class="row"><button id="confirm-building" class="primary">确认保存建筑</button><button id="cancel-building">取消编辑</button></div></section>
+<section data-panel="plans" hidden><h2>观测方案</h2><div id="schemes"></div><label>分析目标 ID（逗号分隔）<textarea id="target-ids" rows="3"></textarea></label><label>必须验收的关键目标 ID（可为空）<input id="critical-ids" placeholder="例如 inspect-02"></label><p>未列入分析的关键目标也算遗漏；遗漏任何关键目标不得推荐。</p><div class="row"><button id="batch" class="primary">分析方案 A</button><button id="batch-b">分析方案 B</button><button id="compare" class="primary">比较 A / B</button></div></section>
+<section data-panel="analysis" hidden><h2>分析结果</h2><p id="policy"></p><div id="results"></div><p>几何核心计算目标点的视距、视场及遮挡；不是建筑整体可见比例，也不是导航。</p></section>
+<section data-panel="reports" hidden><h2>Agent与报告</h2><p>先分析，再点击顶部“生成报告”。无需模型即可完整使用人工建模、分析及报告。参数/建筑变更会使旧结果失效。</p><div id="report-link"></div><p class="warning">正式预检报告披露假设，不等于实测验收结论；默认建筑高度待确认，不出正式方案推荐。</p><details><summary>可选 Agent（默认关闭，单独计费）</summary><label><input id="enable-model" type="checkbox">允许本次模型请求</label><label>指令<input id="instruction" value="比较方案A和B，关键设备优先，并生成报告"></label><button id="agent" disabled>运行 Agent</button><p id="agent-status">Agent关闭；启用并提交指令后才请求模型。</p><p>关键目标须先在观测方案中指定；Agent只选择工具，后台执行几何和规则。</p></details></section>
+</aside></main><footer id="status" role="status">等待数据</footer>
+<script type="module" src="/src/inspection.js"></script></body></html>

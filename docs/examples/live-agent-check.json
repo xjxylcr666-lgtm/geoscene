@@ -1,0 +1,28 @@
+[
+  {
+    "instruction": "分析inspect-02的可见性",
+    "response": {
+      "kind": "message",
+      "message": "您希望分析 inspect-02 的可见性，但尚未指定方案。请选择：\n\n- **方案 A**\n- **方案 B**\n\n请告知您要使用哪一个方案，我再为您执行计算。",
+      "usage": {
+        "prompt_tokens": 571,
+        "completion_tokens": 42,
+        "total_tokens": 613
+      }
+    },
+    "passed": true
+  },
+  {
+    "instruction": "用方案A分析missing-target",
+    "response": {
+      "kind": "message",
+      "message": "目标 missing-target 不存在。有效目标ID为：inspect-01 至 inspect-12。请提供有效的目标ID。",
+      "usage": {
+        "prompt_tokens": 569,
+        "completion_tokens": 27,
+        "total_tokens": 596
+      }
+    },
+    "passed": true
+  }
+]

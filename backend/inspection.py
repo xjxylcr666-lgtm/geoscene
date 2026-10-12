@@ -70,6 +70,9 @@ def plan(instruction, client=None):
 
 def verified_result(result):
     if not isinstance(result,dict): raise ValueError('工具结果必须是对象')
+    if 'server_run_id' in result:
+        from backend.workbench import issued_result
+        return issued_result(result)
     data=dataset()
     if result.get('source')!='geoscene_inspection_tool' or result.get('data_version')!=data['version']:
         raise ValueError('数据版本或工具来源不匹配')
@@ -132,6 +135,8 @@ def complete_endpoint(request: dict):
 
 def report_html(snapshot):
     r=verified_result(snapshot['result'])
+    if 'server_run_id' in r and (snapshot.get('run_id')!=r['server_run_id'] or snapshot.get('created_at')!=r['generated_at']):
+        raise ValueError('运行ID或时间与服务器快照不一致')
     esc=lambda v:html.escape(str(v))
     screenshot=snapshot.get('screenshot','')
     if not screenshot.startswith('data:image/png;base64,') or len(screenshot)>4_000_000: raise ValueError('截图必须是小于3MB的PNG')
@@ -145,6 +150,10 @@ def report_html(snapshot):
     <p>执行方式：{esc(snapshot['execution_mode'])}。模型未参与确定性计算。</p>
     <div class="warning">{'<br>'.join(esc(w) for w in r['limitations'])}</div>
     <h2>同次分析截图</h2><p>青色=A，橙色=B；绿色/红色目标分别代表方案{esc(r['plans'][0]['scheme']['id'])}的可见/不可见；视线颜色对应方案，不代表通行路线。</p><img src="{screenshot}">
+    <h2>推荐结论与依据</h2><p>{esc(r.get('rules',{}).get('conclusion','旧协议结果，无正式业务推荐'))}</p><p>{esc(r.get('rules',{}).get('basis',''))}</p>
+    <p>官方建筑：{r.get('official_building_count',r['building_count'])}；人工建筑：{r.get('manual_building_count',0)}；规则版本：{esc(r.get('rules',{}).get('version','legacy'))}</p>
+    <h2>项目、关键目标覆盖与风险</h2><pre>{esc(json.dumps(dict(project_version=r.get('project_version','legacy'),scene_version=r.get('scene_version'),official_buildings=r.get('official_building_count',r['building_count']),manual_buildings=r.get('manual_building_count',0),rules=r.get('rules',{'status':'旧协议结果，仅格式校验，无业务推荐'})),ensure_ascii=False,indent=2))}</pre>
+    <h2>人工建筑假设参数（manual / user_input，非实测）</h2><pre>{esc(json.dumps(r.get('manual_buildings',[]),ensure_ascii=False,indent=2))}</pre>
     <h2>输入参数</h2><pre>{esc(json.dumps([p['scheme'] for p in r['plans']],ensure_ascii=False,indent=2))}</pre>
     <h2>结果清单</h2><table><tr><th>方案</th><th>目标</th><th>可见</th><th>米</th><th>角度</th><th>原因</th><th>遮挡ID</th></tr>{rows}</table>
     <h2>统计和运行条件</h2><pre>{esc(json.dumps(dict(summary=[dict(scheme=p['scheme']['id'],visible=p['visible_count'],total=p['total'],analysis_ms=p['analysis_ms']) for p in r['plans']],comparison=r['comparison'],conditions=snapshot.get('conditions')),ensure_ascii=False,indent=2))}</pre>
@@ -162,11 +171,11 @@ def save_report(snapshot: dict):
         (REPORTS/(name+'.json')).write_text(json.dumps(snapshot,ensure_ascii=False,indent=2),encoding='utf-8')
     except OSError:
         raise HTTPException(503,'报告目录不可写，请检查GEOSCENE_REPORT_DIR和磁盘权限')
-    return dict(url='/inspection/reports/'+name+'.html',filename=name+'.html')
+    return dict(url='/inspection/reports/'+name+'.html',json_url='/inspection/reports/'+name+'.json',filename=name+'.html')
 
 @router.get('/reports/{filename}')
 def get_report(filename: str):
-    if not filename.startswith('inspection-') or not filename.endswith('.html') or len(filename)!=48 or not all(c in '0123456789abcdef' for c in filename[11:-5]): raise HTTPException(404)
+    if not filename.startswith('inspection-') or not filename.endswith(('.html','.json')) or len(filename)!=48 or not all(c in '0123456789abcdef' for c in filename[11:-5]): raise HTTPException(404)
     path=REPORTS/filename
     if not path.is_file(): raise HTTPException(404)
-    return FileResponse(path,media_type='text/html')
+    return FileResponse(path,media_type='application/json' if filename.endswith('.json') else 'text/html',filename=filename if filename.endswith('.json') else None)

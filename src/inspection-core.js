@@ -8,7 +8,7 @@ export function buildingMeshes(dataset) {
     shape.holes = rings.slice(1).map(ring => new THREE.Path(points(ring)))
     const geometry = new THREE.ExtrudeGeometry(shape, {depth: building.height, bevelEnabled:false, steps:1})
     geometry.rotateX(-Math.PI / 2)
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color:0x90a5ad, side:THREE.DoubleSide}))
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color:building.source==='manual'?0xc28b4b:0x90a5ad, side:THREE.DoubleSide}))
     mesh.position.y = building.base
     mesh.name = building.name
     mesh.userData.id = building.id

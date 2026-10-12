@@ -20,6 +20,8 @@ from backend.validation import validate_target
 app = FastAPI(title="GeoScene", version="0.1.0")
 from backend.inspection import router as inspection_router
 app.include_router(inspection_router)
+from backend.workbench import router as workbench_router
+app.include_router(workbench_router)
 
 app.add_middleware(
     CORSMiddleware,

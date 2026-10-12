@@ -7,7 +7,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-OUTPUT=ROOT.parents[3]/'2026-09-28/geoscene-130-6-7-python-http/outputs'
+OUTPUT=ROOT/'outputs/checkpoints'
 files=[]
 for folder in ['src','backend','public','tests','scripts','docs']:
     files.extend(p for p in (ROOT/folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts and '.pytest_cache' not in p.parts and p.suffix!='.pyc' and not p.name.startswith('.env'))
